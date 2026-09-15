@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  RESTAURANT_ADMIN
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         Role
+  restaurantId String?
+  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([restaurantId])
+}
+
+model Restaurant {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  name            String
+  googleReviewUrl String
+  unlockDelay     Int      @default(5)
+  confettiEnabled Boolean  @default(true)
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  users  User[]
+  prizes Prize[]
+  plays  Play[]
+}
+
+model Prize {
+  id           String   @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  position     Int
+  label        String
+  emoji        String
+  isWin        Boolean  @default(false)
+  weight       Int      @default(10)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  plays Play[]
+
+  @@unique([restaurantId, position])
+  @@index([restaurantId])
+}
+
+model Play {
+  id           String    @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  prizeId      String?
+  prize        Prize?    @relation(fields: [prizeId], references: [id], onDelete: SetNull)
+  won          Boolean
+  code         String?   @unique
+  email        String?
+  optin        Boolean   @default(false)
+  redeemed     Boolean   @default(false)
+  redeemedAt   DateTime?
+  createdAt    DateTime  @default(now())
+
+  emailLogs EmailLog[]
+
+  @@index([restaurantId, createdAt])
+  @@index([code])
+}
+
+model EmailLog {
+  id        String   @id @default(cuid())
+  playId    String
+  play      Play     @relation(fields: [playId], references: [id], onDelete: Cascade)
+  to        String
+  subject   String
+  body      String
+  sentAt    DateTime @default(now())
+
+  @@index([playId])
+}

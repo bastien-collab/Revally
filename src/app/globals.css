@@ -1,0 +1,144 @@
+@import "tailwindcss";
+
+:root {
+  --color-ink: #1a1730;
+  --color-ink-soft: #4e4a6b;
+  --color-ink-mute: #6b6788;
+  --color-purple: #5b4aee;
+  --color-purple-dark: #4a3bd0;
+  --color-gold: #e8a33d;
+  --color-gold-dark: #ce8d26;
+  --color-lavender: #f0eeff;
+  --color-lavender-deep: #e6e2fb;
+}
+
+@theme inline {
+  --color-ink: var(--color-ink);
+  --color-ink-soft: var(--color-ink-soft);
+  --color-ink-mute: var(--color-ink-mute);
+  --color-purple: var(--color-purple);
+  --color-purple-dark: var(--color-purple-dark);
+  --color-gold: var(--color-gold);
+  --color-gold-dark: var(--color-gold-dark);
+  --color-lavender: var(--color-lavender);
+  --color-lavender-deep: var(--color-lavender-deep);
+  --font-sans: var(--font-jakarta);
+  --font-mono: var(--font-dm-mono);
+}
+
+html,
+body {
+  background: #f7f7fb;
+  color: var(--color-ink);
+}
+
+body {
+  font-family: var(--font-jakarta), system-ui, sans-serif;
+}
+
+@keyframes rvfall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  8% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(0, 105vh, 0) rotate(700deg);
+  }
+}
+@keyframes rvrise {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes rvpop {
+  0% {
+    opacity: 0;
+    transform: scale(0.86);
+  }
+  60% {
+    transform: scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes rvrock {
+  0%,
+  100% {
+    transform: rotate(-4.5deg);
+  }
+  50% {
+    transform: rotate(4.5deg);
+  }
+}
+.rv-btn-primary {
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+.rv-btn-primary:hover {
+  background: #4a3bd0 !important;
+}
+.rv-btn-primary:active {
+  transform: scale(0.975);
+}
+
+.rv-btn-gold {
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+.rv-btn-gold:hover {
+  background: #f2b355 !important;
+}
+.rv-btn-gold:active {
+  transform: scale(0.98);
+}
+
+.rv-btn-center {
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+.rv-btn-center:hover {
+  background: #4a3bd0 !important;
+}
+.rv-btn-center:active {
+  transform: scale(0.94);
+}
+
+.rv-input:focus {
+  border-color: #5b4aee !important;
+  box-shadow: 0 0 0 3px rgba(91, 74, 238, 0.16);
+}
+
+.rv-link-muted:hover {
+  color: #1a1730 !important;
+}
+
+.rv-link-outline:hover {
+  border-color: rgba(26, 23, 48, 0.4) !important;
+  color: #1a1730 !important;
+}
+
+@keyframes rvping {
+  0% {
+    transform: scale(1);
+    opacity: 0.45;
+  }
+  70% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+}
