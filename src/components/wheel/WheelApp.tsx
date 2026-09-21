@@ -233,8 +233,10 @@ export default function WheelApp({
 
       <div style={s.header}>
         {logoUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={logoUrl} alt={restaurantName} style={s.logoImage} />
+          <div style={s.logoTile}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={logoUrl} alt={restaurantName} style={s.logoImage} />
+          </div>
         ) : (
           <div style={s.logoBox}>
             LOGO
@@ -727,14 +729,26 @@ const s = {
     textAlign: "center",
     letterSpacing: ".02em",
   } as CSSProperties,
-  logoImage: {
-    width: 44,
-    height: 44,
-    borderRadius: 14,
+  logoTile: {
+    width: 64,
+    height: 64,
+    borderRadius: 18,
     flex: "0 0 auto",
-    objectFit: "cover",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 6,
+    boxSizing: "border-box",
     border: "1px solid rgba(26,23,48,.14)",
     background: "#FFFFFF",
+  } as CSSProperties,
+  logoImage: {
+    maxWidth: "100%",
+    maxHeight: "100%",
+    width: "auto",
+    height: "auto",
+    objectFit: "contain",
+    display: "block",
   } as CSSProperties,
   restaurantName: {
     font: "800 17px/1.2 'Plus Jakarta Sans',sans-serif",

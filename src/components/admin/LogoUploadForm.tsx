@@ -60,10 +60,10 @@ export default function LogoUploadForm({
       </p>
 
       <div className="flex items-center gap-4">
-        <div className="flex h-16 w-16 flex-none items-center justify-center overflow-hidden rounded-2xl border border-black/10 bg-black/[0.02]">
+        <div className="flex h-16 w-16 flex-none items-center justify-center overflow-hidden rounded-2xl border border-black/10 bg-white p-1.5">
           {displayUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={displayUrl} alt="Logo" className="h-full w-full object-cover" />
+            <img src={displayUrl} alt="Logo" className="max-h-full max-w-full object-contain" />
           ) : (
             <span className="text-[9px] font-semibold uppercase tracking-wide text-ink-mute">Aucun logo</span>
           )}
