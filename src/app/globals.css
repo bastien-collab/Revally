@@ -119,6 +119,17 @@ body {
   box-shadow: 0 0 0 3px rgba(91, 74, 238, 0.16);
 }
 
+.rv-btn-secondary {
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+.rv-btn-secondary:hover {
+  background: rgba(91, 74, 238, 0.14) !important;
+}
+.rv-btn-secondary:active {
+  transform: scale(0.98);
+}
+
 .rv-link-muted:hover {
   color: #1a1730 !important;
 }

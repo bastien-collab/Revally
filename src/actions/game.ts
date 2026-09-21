@@ -93,3 +93,30 @@ export async function submitEmailAction(
 
   return { ok: true };
 }
+
+/**
+ * Optional email capture on a losing play — no code to send, just lets the
+ * restaurant grow its list even when nobody wins.
+ */
+export async function submitLoseEmailAction(
+  playId: string,
+  email: string,
+  optin: boolean
+): Promise<SubmitEmailResult> {
+  const trimmed = email.trim();
+  if (!isValidEmail(trimmed)) {
+    return { ok: false, error: "Adresse email invalide." };
+  }
+
+  const play = await prisma.play.findUnique({ where: { id: playId } });
+  if (!play || play.won) {
+    return { ok: false, error: "Action non disponible." };
+  }
+
+  await prisma.play.update({
+    where: { id: playId },
+    data: { email: trimmed, optin },
+  });
+
+  return { ok: true };
+}

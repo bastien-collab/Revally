@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useTransition, type CSSProperties } from "react";
 import Image from "next/image";
-import { spinAction, submitEmailAction } from "@/actions/game";
+import { spinAction, submitEmailAction, submitLoseEmailAction } from "@/actions/game";
 import { getSegmentStyle } from "@/lib/wheel-visuals";
 
 export type PrizeDTO = { position: number; label: string; emoji: string; isWin: boolean };
@@ -56,6 +56,7 @@ export default function WheelApp({
   const [email, setEmail] = useState("");
   const [optin, setOptin] = useState(true);
   const [sent, setSent] = useState(false);
+  const [loseSent, setLoseSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -211,6 +212,19 @@ export default function WheelApp({
     });
   }
 
+  function handleSubmitLoseEmail() {
+    if (!playId) return;
+    setError(null);
+    startTransition(async () => {
+      const result = await submitLoseEmailAction(playId, email, optin);
+      if (!result.ok) {
+        setError(result.error);
+        return;
+      }
+      setLoseSent(true);
+    });
+  }
+
   function handleCopyCode() {
     if (!code) return;
     try {
@@ -304,7 +318,20 @@ export default function WheelApp({
         />
       )}
 
-      {screen === "lose" && <LoseScreen />}
+      {screen === "lose" && (
+        <LoseScreen
+          restaurantName={restaurantName}
+          email={email}
+          setEmail={setEmail}
+          optin={optin}
+          setOptin={setOptin}
+          emailInvalid={emailInvalid}
+          loseSent={loseSent}
+          onSubmit={handleSubmitLoseEmail}
+          error={error}
+          isPending={isPending}
+        />
+      )}
 
       <div style={s.footer}>
         <span style={s.footerText}>Propulsé par</span>
@@ -641,7 +668,29 @@ function CodeScreen({
   );
 }
 
-function LoseScreen() {
+function LoseScreen({
+  restaurantName,
+  email,
+  setEmail,
+  optin,
+  setOptin,
+  emailInvalid,
+  loseSent,
+  onSubmit,
+  error,
+  isPending,
+}: {
+  restaurantName: string;
+  email: string;
+  setEmail: (v: string) => void;
+  optin: boolean;
+  setOptin: (v: boolean) => void;
+  emailInvalid: boolean;
+  loseSent: boolean;
+  onSubmit: () => void;
+  error: string | null;
+  isPending: boolean;
+}) {
   return (
     <div style={{ ...s.screen, justifyContent: "center", padding: "10px 0 0", animation: "rvrise .5s ease both" }}>
       <div style={s.badgeNeutral}>
@@ -660,6 +709,51 @@ function LoseScreen() {
       <div style={s.nextTryCard}>
         <div style={s.reviewCardLabel}>Prochain essai</div>
         <div style={s.nextTryValue}>À votre prochaine visite</div>
+      </div>
+
+      <div style={s.loseEmailCard}>
+        {loseSent ? (
+          <div style={s.sentRow}>
+            <span style={s.sentDot} />
+            <span style={s.sentLabel}>Merci, vous êtes inscrit·e ✓</span>
+          </div>
+        ) : (
+          <>
+            <div style={s.loseEmailLabel}>Envie de nos offres ?</div>
+            <p style={s.loseEmailHint}>
+              Laissez votre email (facultatif) pour recevoir les actus et bons plans de {restaurantName}.
+            </p>
+            <input
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              placeholder="prenom@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              style={s.loseEmailInput}
+              className="rv-input"
+            />
+            <label style={s.optinRow}>
+              <input
+                type="checkbox"
+                checked={optin}
+                onChange={(e) => setOptin(e.target.checked)}
+                style={s.checkbox}
+              />
+              <span style={s.optinText}>Je souhaite recevoir les offres et nouveautés de {restaurantName}.</span>
+            </label>
+            <button
+              type="button"
+              onClick={onSubmit}
+              disabled={emailInvalid || isPending}
+              style={s.secondaryButton}
+              className="rv-btn-secondary"
+            >
+              S&apos;inscrire
+            </button>
+            {error && <p style={s.errorText}>{error}</p>}
+          </>
+        )}
       </div>
 
       <a href="#carte" style={s.outlineLink} className="rv-link-outline">
@@ -1089,6 +1183,46 @@ const s = {
     boxShadow: "0 4px 16px rgba(26,23,48,.05)",
   } as CSSProperties,
   nextTryValue: { margin: "11px 0 0", font: "800 21px/1.2 'Plus Jakarta Sans',sans-serif", letterSpacing: "-.025em", color: "#1A1730" } as CSSProperties,
+  loseEmailCard: {
+    margin: "16px 0 0",
+    padding: "18px 18px 20px",
+    borderRadius: 20,
+    background: "#FFFFFF",
+    border: "1px solid rgba(26,23,48,.09)",
+    boxShadow: "0 4px 16px rgba(26,23,48,.05)",
+  } as CSSProperties,
+  loseEmailLabel: {
+    font: "800 14.5px/1.3 'Plus Jakarta Sans',sans-serif",
+    color: "#1A1730",
+  } as CSSProperties,
+  loseEmailHint: {
+    margin: "4px 0 0",
+    font: "500 12.5px/1.5 'Plus Jakarta Sans',sans-serif",
+    color: "#5B5878",
+  } as CSSProperties,
+  loseEmailInput: {
+    margin: "14px 0 0",
+    width: "100%",
+    minHeight: 48,
+    padding: "0 16px",
+    borderRadius: 14,
+    border: "1px solid rgba(26,23,48,.16)",
+    background: "#FFFFFF",
+    color: "#1A1730",
+    font: "600 14.5px/1 'Plus Jakarta Sans',sans-serif",
+    outline: "none",
+  } as CSSProperties,
+  secondaryButton: {
+    margin: "12px 0 0",
+    width: "100%",
+    minHeight: 46,
+    border: "1px solid rgba(91,74,238,.35)",
+    borderRadius: 14,
+    background: "rgba(91,74,238,.08)",
+    color: "#5B4AEE",
+    font: "800 13.5px/1 'Plus Jakarta Sans',sans-serif",
+    cursor: "pointer",
+  } as CSSProperties,
   outlineLink: {
     margin: "24px 0 0",
     width: "100%",
