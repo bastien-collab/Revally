@@ -1,12 +1,15 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getRestaurantStats } from "@/lib/stats";
+import { logoUrlFor } from "@/lib/logo";
 import StatCard from "@/components/admin/StatCard";
 import PlaysTable from "@/components/admin/PlaysTable";
 import PrizeEditor from "@/components/admin/PrizeEditor";
 import RestaurantSettingsForm from "@/components/admin/RestaurantSettingsForm";
 import AddAdminForm from "@/components/admin/AddAdminForm";
 import ActiveToggle from "@/components/admin/ActiveToggle";
+import QrCodeCard from "@/components/admin/QrCodeCard";
+import LogoUploadForm from "@/components/admin/LogoUploadForm";
 
 export default async function RestaurantDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -41,6 +44,8 @@ export default async function RestaurantDetailPage({ params }: { params: Promise
         </div>
       </div>
 
+      <QrCodeCard url={wheelUrl} filename={`qr-${restaurant.slug}.png`} />
+
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
         <StatCard label="Parties jouées" value={String(stats.totalPlays)} />
         <StatCard
@@ -66,6 +71,13 @@ export default async function RestaurantDetailPage({ params }: { params: Promise
                 <div className="mt-1 text-xs font-medium text-ink-mute">{p._count.plays} tirage(s)</div>
               </div>
             ))}
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-extrabold text-ink">Logo</h2>
+        <div className="rounded-2xl border border-black/[0.06] bg-white p-5">
+          <LogoUploadForm restaurantId={restaurant.id} logoUrl={logoUrlFor(restaurant)} />
         </div>
       </section>
 

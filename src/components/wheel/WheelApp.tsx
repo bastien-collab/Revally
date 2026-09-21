@@ -10,6 +10,7 @@ export type PrizeDTO = { position: number; label: string; emoji: string; isWin: 
 export type WheelAppProps = {
   restaurantSlug: string;
   restaurantName: string;
+  logoUrl: string | null;
   reviewUrl: string;
   unlockDelay: number;
   confettiEnabled: boolean;
@@ -38,6 +39,7 @@ function easeOutCubic(t: number) {
 export default function WheelApp({
   restaurantSlug,
   restaurantName,
+  logoUrl,
   reviewUrl,
   unlockDelay,
   confettiEnabled,
@@ -230,11 +232,16 @@ export default function WheelApp({
       <div style={s.blobBottom} />
 
       <div style={s.header}>
-        <div style={s.logoBox}>
-          LOGO
-          <br />
-          RESTO
-        </div>
+        {logoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={logoUrl} alt={restaurantName} style={s.logoImage} />
+        ) : (
+          <div style={s.logoBox}>
+            LOGO
+            <br />
+            RESTO
+          </div>
+        )}
         <div style={{ minWidth: 0, flex: "1 1 auto" }}>
           <div style={s.restaurantName}>{restaurantName}</div>
           <div style={s.restaurantSub}>Jeu offert par la maison</div>
@@ -719,6 +726,15 @@ const s = {
     color: "#5B5878",
     textAlign: "center",
     letterSpacing: ".02em",
+  } as CSSProperties,
+  logoImage: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    flex: "0 0 auto",
+    objectFit: "cover",
+    border: "1px solid rgba(26,23,48,.14)",
+    background: "#FFFFFF",
   } as CSSProperties,
   restaurantName: {
     font: "800 17px/1.2 'Plus Jakarta Sans',sans-serif",

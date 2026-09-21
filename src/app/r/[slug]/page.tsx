@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { logoUrlFor } from "@/lib/logo";
 import WheelApp from "@/components/wheel/WheelApp";
 
 export default async function WheelPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -19,6 +20,7 @@ export default async function WheelPage({ params }: { params: Promise<{ slug: st
       <WheelApp
         restaurantSlug={restaurant.slug}
         restaurantName={restaurant.name}
+        logoUrl={logoUrlFor(restaurant)}
         reviewUrl={restaurant.googleReviewUrl}
         unlockDelay={restaurant.unlockDelay}
         confettiEnabled={restaurant.confettiEnabled}

@@ -71,6 +71,51 @@ export async function updatePrizes(restaurantId: string, prizes: PrizeInput[]): 
   return { ok: true };
 }
 
+const MAX_LOGO_BYTES = 2 * 1024 * 1024;
+const ALLOWED_LOGO_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/svg+xml"]);
+
+export async function uploadRestaurantLogo(restaurantId: string, formData: FormData): Promise<ActionResult> {
+  await requireRestaurantAccess(restaurantId);
+
+  const file = formData.get("logo");
+  if (!(file instanceof File) || file.size === 0) {
+    return { ok: false, error: "Choisissez une image." };
+  }
+  if (!ALLOWED_LOGO_TYPES.has(file.type)) {
+    return { ok: false, error: "Formats acceptés : PNG, JPEG, WEBP ou SVG." };
+  }
+  if (file.size > MAX_LOGO_BYTES) {
+    return { ok: false, error: "L'image doit faire moins de 2 Mo." };
+  }
+
+  const bytes = Buffer.from(await file.arrayBuffer());
+  const restaurant = await prisma.restaurant.update({
+    where: { id: restaurantId },
+    data: { logo: bytes, logoType: file.type, logoUpdatedAt: new Date() },
+    select: { slug: true },
+  });
+
+  revalidatePath("/dashboard/settings");
+  revalidatePath(`/admin/restaurants/${restaurantId}`);
+  revalidatePath(`/r/${restaurant.slug}`);
+  return { ok: true };
+}
+
+export async function removeRestaurantLogo(restaurantId: string): Promise<ActionResult> {
+  await requireRestaurantAccess(restaurantId);
+
+  const restaurant = await prisma.restaurant.update({
+    where: { id: restaurantId },
+    data: { logo: null, logoType: null, logoUpdatedAt: null },
+    select: { slug: true },
+  });
+
+  revalidatePath("/dashboard/settings");
+  revalidatePath(`/admin/restaurants/${restaurantId}`);
+  revalidatePath(`/r/${restaurant.slug}`);
+  return { ok: true };
+}
+
 export async function setPlayRedeemed(playId: string, redeemed: boolean): Promise<ActionResult> {
   const play = await prisma.play.findUnique({ where: { id: playId } });
   if (!play) return { ok: false, error: "Introuvable." };

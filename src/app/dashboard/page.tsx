@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getRestaurantStats } from "@/lib/stats";
 import StatCard from "@/components/admin/StatCard";
 import PlaysTable from "@/components/admin/PlaysTable";
+import QrCodeCard from "@/components/admin/QrCodeCard";
 
 export default async function DashboardPage() {
   const session = await getSession();
@@ -28,6 +29,8 @@ export default async function DashboardPage() {
           — à afficher en QR code dans votre établissement.
         </p>
       </div>
+
+      <QrCodeCard url={wheelUrl} filename={`qr-${restaurant.slug}.png`} />
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
         <StatCard label="Parties jouées" value={String(stats.totalPlays)} />

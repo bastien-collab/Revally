@@ -1,8 +1,10 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { logoUrlFor } from "@/lib/logo";
 import RestaurantSettingsForm from "@/components/admin/RestaurantSettingsForm";
 import PrizeEditor from "@/components/admin/PrizeEditor";
+import LogoUploadForm from "@/components/admin/LogoUploadForm";
 
 export default async function DashboardSettingsPage() {
   const session = await getSession();
@@ -17,6 +19,13 @@ export default async function DashboardSettingsPage() {
   return (
     <div className="flex flex-col gap-8">
       <h1 className="text-2xl font-extrabold tracking-tight text-ink">Paramètres & roue</h1>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-extrabold text-ink">Logo</h2>
+        <div className="rounded-2xl border border-black/[0.06] bg-white p-5">
+          <LogoUploadForm restaurantId={restaurant.id} logoUrl={logoUrlFor(restaurant)} />
+        </div>
+      </section>
 
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-extrabold text-ink">Paramètres</h2>
